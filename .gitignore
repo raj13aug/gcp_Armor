@@ -1,5 +1,4 @@
 *.json
 *.terraform*
-*terraform.*
 *ssh-keys
 *function.zip*

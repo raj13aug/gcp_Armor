@@ -1,34 +1,27 @@
-resource "google_compute_security_policy" "main" {
-  name = "my-security-policy"
+resource "google_compute_security_policy" "edge" {
+  name        = "edge-sec-policy"
+  type        = "CLOUD_ARMOR_EDGE"
+  description = "Edge Security Policy"
 
-  dynamic "rule" {
-    for_each = var.rules_src_ip_ranges
-    iterator = allow
-    content {
-      action   = allow.value.action
-      priority = allow.value.priority
-      match {
-        versioned_expr = "SRC_IPS_V1"
-        config {
-          src_ip_ranges = allow.value.ranges
-        }
+  rule {
+    action   = "allow"
+    priority = "1000"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["0.0.0.0/0"]
       }
-      description = allow.value.description
     }
   }
 
-  dynamic "rule" {
-    for_each = var.rules_expression
-    iterator = deny
-    content {
-      action   = deny.value.action
-      priority = deny.value.priority
-      match {
-        expr {
-          expression = deny.value.expression
-        }
+  rule {
+    action   = "deny(403)"
+    priority = "2147483647"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
       }
-      description = deny.value.description
     }
   }
 }

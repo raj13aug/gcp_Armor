@@ -69,11 +69,13 @@ resource "google_compute_url_map" "http_https_redirect" {
 }
 
 
+
 resource "google_compute_backend_bucket" "static" {
-  name        = "website-backend"
-  description = "Contains files needed by the website"
-  bucket_name = google_storage_bucket.static.name
-  enable_cdn  = true
+  name                 = "website-backend"
+  description          = "Contains files needed by the website"
+  bucket_name          = google_storage_bucket.static.name
+  enable_cdn           = true
+  edge_security_policy = google_compute_security_policy.edge.id
 }
 
 

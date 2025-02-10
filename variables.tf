@@ -9,20 +9,27 @@ variable "region" {
   description = "default region"
   default     = "us-central1"
 }
-
-variable "action" {
-  type    = string
-  default = "deny"
+variable "security_policy_name" {
+  description = "The name for the security policy"
+  type        = string
+  default     = "my-security-policy"
 }
 
-variable "preview_mode" {
-  type    = string
-  default = false
+variable "rules_src_ip_ranges" {
+  description = "A list of security rules src ip ranges to be applied"
+  type = list(object({
+    action      = string
+    priority    = number
+    ranges      = list(string)
+    description = string
+  }))
 }
 
-variable "owasp_rules" {
-  type = map(object({
-    priority    = string
+variable "rules_expression" {
+  description = "A list of security rules expression to be applied"
+  type = list(object({
+    action      = string
+    priority    = number
     expression  = string
     description = string
   }))

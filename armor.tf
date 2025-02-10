@@ -1,28 +1,34 @@
-resource "google_compute_security_policy" "policy" {
-  name = "owasp-security-policy"
-  rule {
-    action   = "allow"
-    priority = "2147483647"
-    match {
-      versioned_expr = "SRC_IPS_V1"
-      config {
-        src_ip_ranges = ["*"]
-      }
-    }
-    description = "default rule"
-  }
+resource "google_compute_security_policy" "main" {
+  name = "my-security-policy"
+
   dynamic "rule" {
-    for_each = var.owasp_rules
+    for_each = var.rules_src_ip_ranges
+    iterator = allow
     content {
-      preview     = var.preview_mode
-      action      = var.action
-      priority    = rule.value.priority
-      description = rule.value.description
+      action   = allow.value.action
+      priority = allow.value.priority
       match {
-        expr {
-          expression = rule.value.expression
+        versioned_expr = "SRC_IPS_V1"
+        config {
+          src_ip_ranges = allow.value.ranges
         }
       }
+      description = allow.value.description
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.rules_expression
+    iterator = deny
+    content {
+      action   = deny.value.action
+      priority = deny.value.priority
+      match {
+        expr {
+          expression = deny.value.expression
+        }
+      }
+      description = deny.value.description
     }
   }
 }
